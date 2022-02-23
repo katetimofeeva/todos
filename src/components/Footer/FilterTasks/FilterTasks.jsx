@@ -1,11 +1,20 @@
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+
 import { FILTERS } from "./Constants.jsx";
+import { setMarkerActionCreator } from "../../../redux/actions.jsx";
+import { receiveMarker } from "../../../redux/selectors.jsx";
 
 import styled from "styled-components";
 
-const FilterTasks = ({ filter, marker }) => {
+const FilterTasks = () => {
+  const marker = useSelector(receiveMarker);
+  
+  
+  const dispatch = useDispatch();
+
   const getFilter = (e) => {
-    filter(e.target.innerText.toLocaleLowerCase());
+    dispatch(setMarkerActionCreator (e.target.innerText.toLocaleLowerCase()));
   };
 
   return (
@@ -25,7 +34,7 @@ const FilterTasks = ({ filter, marker }) => {
   );
 };
 
-const Root= styled.li`
+const Root = styled.li`
   display: inline-block;
 `;
 

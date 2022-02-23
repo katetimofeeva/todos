@@ -9,7 +9,7 @@ import { Todo, Login } from "../src/pages";
 import "./App.scss";
 
 function App() {
-  console.log("12312");
+
   return (
    
     <BrowserRouter>
@@ -19,8 +19,7 @@ function App() {
         <Route path="/login" element={<Login />} />
       </Routes>
     </BrowserRouter>
-    // <Login/>
-    // <Todo/>
+   
   );
 }
 

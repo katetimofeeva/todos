@@ -1,36 +1,86 @@
 import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 import styled from "styled-components";
+import {
+  completedItem,
+  getTodos,
+  editItem,
+  deleteItem,
+} from "../../../Utils/Servise";
 
-const TaskItem = ({ item, completedTask, deleteTask, editTask }) => {
+import {
+  deleteTaskActionCreator,
+  toggleTaskActionCreator,
+  editTaskActionCreator,
+  setMarkerActionCreator
+} from "../../../redux/actions.jsx";
+
+import { receiveTodos, receiveMarker } from "../../../redux/selectors.jsx";
+
+const TaskItem = ({ item }) => {
   const [activeEdit, setActiveEdit] = useState(true);
   const [value, setValue] = useState(item.description);
 
-  console.log(value);
+  const dispatch = useDispatch();
+  const todos = useSelector(receiveTodos);
+  const marker = useSelector(receiveMarker);
 
   const handleChange = (e) => {
-    console.log(e.target.value);
+    // console.log(e.target.value);
     setValue(e.target.value);
   };
 
-  const handaleDeleteTask = () => {
-    deleteTask(item.id);
+  const completedTask = () => {
+    completedItem(item._id, item.completed);
+    getTodos().then((res) => {
+      dispatch(toggleTaskActionCreator(res.data ) );
+    });
+  };
+  const handleDeleteTask = () => {
+    deleteItem(item._id);
+    getTodos().then((res) => {
+      dispatch(deleteTaskActionCreator(res.data));
+    });
+
+    if (marker === "completed" && todos.length) {
+      dispatch(setMarkerActionCreator("all") );
+    }
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
+    if (e.key === "Enter" && value.length) {
       console.log("ok");
+      editItem(value, item._id);
 
-      editTask(item.id, value);
+      setActiveEdit(true);
+    } else if (e.key === "Enter" && !value.length) {
+      console.log("no");
+      deleteItem(item._id);
+
       setActiveEdit(true);
     }
-  };
-  const handleBlur = () => {
-    editTask(item.id, value);
-    setActiveEdit(true);
+    getTodos().then((res) => {
+      dispatch(editTaskActionCreator( res.data ));
+    });
   };
 
-  // const description = item.description.slice(0, 30);
+  const handleBlur = () => {
+    if (value.length) {
+      console.log("blur");
+      editItem(value, item._id);
+      setActiveEdit(true);
+    } else {
+      deleteItem(item._id);
+    }
+
+    setActiveEdit(true);
+    getTodos().then((res) => {
+      dispatch(editTaskActionCreator( res.data ));
+    });
+  };
+
+  const description = item.description.slice(0, 30);
 
   return (
     <StyledLi>
@@ -47,8 +97,8 @@ const TaskItem = ({ item, completedTask, deleteTask, editTask }) => {
           <StyleLabel
             activeEdit={activeEdit}
             completed={item.completed}
-            htmlFor={item.id}
-            onClick={() => completedTask(item.id)}
+            htmlFor={item._id}
+            onClick={() => completedTask(item._id, item.completed)}
           ></StyleLabel>
         </div>
         {activeEdit ? (
@@ -56,7 +106,7 @@ const TaskItem = ({ item, completedTask, deleteTask, editTask }) => {
             onDoubleClick={() => setActiveEdit(false)}
             completed={item.completed}
           >
-            {item.description}
+            {description}
           </ItemTask>
         ) : (
           <Value
@@ -69,7 +119,7 @@ const TaskItem = ({ item, completedTask, deleteTask, editTask }) => {
         )}
         {activeEdit && (
           <div>
-            <DeleteButton className="delete" onClick={handaleDeleteTask}>
+            <DeleteButton className="delete" onClick={handleDeleteTask}>
               ✖
             </DeleteButton>
           </div>

@@ -1,13 +1,31 @@
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 import styled from "styled-components";
 
 import FilterTasks from "./FilterTasks/FilterTasks.jsx";
 import { StyledForAllButton } from "../ui/Button.jsx";
+import { deleteAllTaskActionCreator, setMarkerActionCreator } from "../../redux/actions.jsx";
+import { receiveMarker, receiveTodos } from "../../redux/selectors.jsx";
+import { deleteAllTasks, getTodos} from '../../Utils/Servise'
 
-const Footer = ({ todos, clearCompletedAll, filter, marker }) => {
+const Footer = () => {
+  const todos = useSelector(receiveTodos);
+  const marker = useSelector(receiveMarker);
+  const dispatch = useDispatch();
   const countActive = todos.filter((item) => !item.completed).length;
   const countCompleted = todos.filter((item) => item.completed).length;
+
+  const clearCompletedAll = () => {
+    console.log('125')
+    deleteAllTasks() 
+    getTodos().then((res) => {
+      dispatch(deleteAllTaskActionCreator(res.data) );
+    });
+    if (marker === "completed" && todos.length) {
+      dispatch(setMarkerActionCreator("all") );
+    }
+  };
 
   return (
     <Root>
@@ -15,12 +33,15 @@ const Footer = ({ todos, clearCompletedAll, filter, marker }) => {
         <strong>{countActive} </strong>items left
       </StyledSpan>
       <FooterButtons>
-        <FilterTasks filter = {filter} marker={marker}/>
+        <FilterTasks />
       </FooterButtons>
-    { todos.some((item) => item.completed)?  
-      <ButtonClearCompleted onClick={clearCompletedAll}>
-        Clear completed (<strong>{countCompleted}</strong>)
-      </ButtonClearCompleted> : ''}
+      {todos.some((item) => item.completed) ? (
+        <ButtonClearCompleted onClick={clearCompletedAll}>
+          Clear completed (<strong>{countCompleted}</strong>)
+        </ButtonClearCompleted>
+      ) : (
+        ""
+      )}
     </Root>
   );
 };
@@ -33,15 +54,17 @@ const Root = styled.footer`
   position: relative;
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     right: 0;
-    
+
     left: 0;
     height: 40px;
     top: -70px;
     z-index: 0;
-    box-shadow: 0 1px 1px rgb(0 0 0 / 30%), 0 6px 0 -3px rgb(255 255 255 / 80%), 0 7px 1px -3px rgb(0 0 0 / 30%), 0 43px 0 -6px rgb(255 255 255 / 80%), 0 44px 2px -6px rgb(0 0 0 / 20%);
+    box-shadow: 0 1px 1px rgb(0 0 0 / 30%), 0 6px 0 -3px rgb(255 255 255 / 80%),
+      0 7px 1px -3px rgb(0 0 0 / 30%), 0 43px 0 -6px rgb(255 255 255 / 80%),
+      0 44px 2px -6px rgb(0 0 0 / 20%);
     /* content: "";
     top: -330%;
     position: absolute;

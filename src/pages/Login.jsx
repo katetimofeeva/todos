@@ -8,7 +8,7 @@ import Button from "@mui/material/Button";
 import { Formik } from "formik";
 import * as yup from "yup";
 
-import {  doFetch } from "../components/Utils/Servise";
+import { loginUser } from "../Utils/Servise";
 
 const Login = () => {
   const ValidationSchema = yup.object().shape({
@@ -26,7 +26,7 @@ const Login = () => {
 
   const handleSubmit = (value, {resetForm}) => {
     console.log(value);
-    doFetch('POST', 'http://localhost:3030/login', JSON.stringify(value));
+    loginUser(value)
      resetForm({value:''})
      
   };
@@ -139,19 +139,7 @@ const Logo = styled.h1`
   text-shadow: -1px -1px rgb(0 0 0 / 20%);
 `;
 
-const StyledInput = styled.input`
-  width: 400px;
-  background-color: rgb(255, 255, 255);
-  border-bottom-color: rgb(153, 153, 153);
-  margin-left: 25px;
 
-  font-size: 24px;
-  padding: 18px 15px;
-  font-size: 24px;
-  color: rgb(77, 77, 77);
-  border-bottom: 1px solid #999;
-  /* box-shadow: inset 0 -1px 5px 0 rgba(0, 0, 0, 0.2); */
-`;
 
 const Root = styled.div`
   margin-top: 100px;
@@ -161,23 +149,7 @@ const Root = styled.div`
   background-color: #fff;
 `;
 
-const SubmitButton = styled.button`
-  line-height: 20px;
-  display: block;
-  margin: 20px auto 0px auto;
-  text-decoration: none;
-  background: rgba(0, 0, 0, 0.1);
-  font-size: 11px;
-  padding: 10px 20px;
-  border-radius: 3px;
-  box-shadow: 0 -1px 0 0 rgb(0 0 0 / 20%);
-  border: hidden;
-  color: #83756f;
-  font-weight: bold;
-  font-size: 1.2em;
-  cursor: pointer;
-  /* background-color: #eaeaea; */
-`;
+
 
 const InfoError = styled.p`
   color: red;

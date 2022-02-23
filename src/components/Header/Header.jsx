@@ -6,13 +6,13 @@ import MainInput from "./MainInput/MainInput.jsx";
 
 import styled from "styled-components";
 
-const Header = ({ todosLength, addTask, completedAllTasks, isAllTasksCompleted  }) => {
+const Header = () => {
 
   return (
     <>
       <HeaderTodos>
         <Logo>todos</Logo>
-        <MainInput todosLength={todosLength} addTask ={addTask} completedAllTasks = {completedAllTasks} isAllTasksCompleted = {isAllTasksCompleted} />
+        <MainInput />
       </HeaderTodos>
     </>
   );

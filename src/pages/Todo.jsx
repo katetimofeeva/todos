@@ -1,152 +1,35 @@
-import React, { useState,  } from "react";
+import React, { useEffect } from "react";
 
-import { nanoid } from "nanoid";
+import { useSelector, useDispatch } from "react-redux";
 
 import styled from "styled-components";
 
 import Header from "../components/Header/Header.jsx";
 import List from "../components/TasksList/List/List.jsx";
 import Footer from "../components/Footer/Footer.jsx";
-import { getTodos,
-  addTodo,
-  deleteTask,
-  completedTask,
-  completedAllTasks,
-  deleteAllTasks,
-  editTask,
-  } from '../components/Utils/Servise.jsx'
+import { getTodos } from "../Utils/Servise.jsx";
+import { receiveTodos } from "../redux/selectors.jsx";
+import { addTaskActionCreator } from "../redux/actions";
 
 const Todo = () => {
-  const [todos, setTodos] = useState([]);
+  const todos = useSelector(receiveTodos);
+  const dispatch = useDispatch();
+  console.log(todos);
 
-  const [marker, setMarker] = useState("all");
-
-  //
-
-  // useEffect(() => {
-  //   console.log("useEffect");
-
-  // }, [marker]);
-
-  const addTask = (value) => {
-    setTodos([
-      ...todos,
-      { description: value, id: nanoid(10), completed: false },
-    ]);
-  };
-
-  const completedTask = (id) => {
-    const newTodos = todos.map((item) => {
-      if (item.id === id) {
-        return {
-          ...item,
-          completed: !item.completed,
-        };
-      }
-      return item;
+  useEffect(() => {
+    console.log("useEffect");
+    getTodos().then((res) => {
+      dispatch(addTaskActionCreator(res.data));
     });
-
-    setTodos(newTodos);
-  };
-
-  const clearCompletedAll = () => {
-    setTodos(todos.filter((item) => !item.completed));
-    if (marker === "completed" && todos.length) {
-      setMarker("all");
-    }
-  };
-
-  const deleteTask = (id) => {
-    console.log(marker);
-    setTodos(todos.filter((item) => item.id !== id));
-
-    if (visibleTask().length === 1) {
-      setMarker("all");
-    }
-  };
-
-  const completedAllTasks = (done) => {
-    setTodos(
-      todos.map((item) => {
-        return {
-          ...item,
-          completed: done,
-        };
-      })
-    );
-  };
-
-  const filter = (filter) => {
-    switch (filter) {
-      case "completed":
-        setMarker("completed");
-        break;
-      case "active":
-        setMarker("active");
-        break;
-      default:
-        setMarker("all");
-        break;
-    }
-  };
-
-  const editTask =(id, value)=>{
-    console.log(value)
-   setTodos(todos.map(item => {
-     if(item.id===id){
-       return{
-         ...item,
-         description: value
-       }
-     } return item
-   }))
-  }
-
-  let isAllCompleted = false;
-
-  todos.length === 0
-    ? (isAllCompleted = false)
-    : (isAllCompleted = todos.every((item) => item.completed));
-
-  const visibleTask = () => {
-    console.log(marker);
-    if (marker === "completed") {
-      return todos.filter((item) => item.completed);
-    } else if (marker === "active") {
-      return todos.filter((item) => !item.completed);
-    } else {
-      return todos;
-    }
-  };
-
+  }, []);
 
   return (
     <Root>
       <MainSection>
-        <Header
-          addTask={addTask}
-          completedAllTasks={completedAllTasks}
-          isAllTasksCompleted={isAllCompleted}
-          todosLength={todos.length}
-
-        />
-        <List
-          todos={visibleTask()}
-          completedTask={completedTask}
-          deleteTask={deleteTask}
-          editTask={editTask}
-        />
+        <Header />
+        <List />
       </MainSection>
-      {todos.length === 0 ? (
-        ""
-      ) : (
-        <Footer
-          todos={todos}
-          clearCompletedAll={clearCompletedAll}
-          filter={filter}
-          marker={marker}
-        />
-      )}
+      {todos.length === 0 ? "" : <Footer />}
     </Root>
   );
 };
@@ -180,7 +63,6 @@ const MainSection = styled.section`
     position: absolute;
     top: 0;
     left: 45px;
-    /* height: 100vh; */
     height: 100%;
     z-index: 2;
   }

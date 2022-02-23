@@ -1,15 +1,31 @@
 import React from "react";
+import { useSelector } from "react-redux";
 
 import styled from "styled-components";
 import TaskItem from "../TaskItem/TaskItem.jsx";
+import {receiveTodos, receiveMarker} from '../../../redux/selectors'
 
-function List({ todos, completedTask, deleteTask, editTask }) {
+function List({  completedTask, deleteTask, editTask }) {
+
+  const todos = useSelector(receiveTodos)
+  const marker = useSelector(receiveMarker);
+
+  const visibleTask = () => {
+    if (marker === "completed") {
+      return todos.filter((item) => item.completed);
+    } else if (marker === "active") {
+      return todos.filter((item) => !item.completed);
+    } else {
+      return todos;
+    }
+  };
+  const showTask = visibleTask();
 
   return (
     <Root>
       <StyledUl>
-        {todos.map((item) => {
-          return <TaskItem item={item} key={item.id} completedTask = {completedTask} deleteTask={deleteTask} editTask={editTask}/>;
+        {showTask.map((item) => { 
+          return <TaskItem item={item} key={item._id} />;
         })}
       </StyledUl>
     </Root>
